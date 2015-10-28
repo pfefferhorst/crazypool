@@ -21,6 +21,21 @@ var init = function() {
     drawPoint(targetPoint[0], targetPoint[1], "target");
     drawPoint(startPoint[0], startPoint[1], "point");
     drawPoint(collisionPoint[0], collisionPoint[1], "point");
+    
+    var circle = new createjs.Shape();
+    circle.graphics.beginFill("lightgrey").drawCircle(0, 0, 10);
+
+    var dragger = new createjs.Container();
+    dragger.x = dragger.y = 100;
+    dragger.addChild(circle);
+    stage.addChild(dragger);
+    
+    dragger.on("pressmove",function(evt) {
+    // currentTarget will be the container that the event listener was added to:
+    evt.currentTarget.x = Math.round(evt.stageX/50)*50;
+    evt.currentTarget.y = Math.round(evt.stageY/50)*50;
+});
+
 
 }
 
@@ -108,5 +123,13 @@ function getRandomInt(min, max) {
 function handleTick() {
   stage.update();
 }
+
+function BEWEGEN(evt) {
+    // currentTarget will be the container that the event listener was added to:
+    evt.currentTarget.x = evt.stageX;
+    evt.currentTarget.y = evt.stageY;
+    // make sure to redraw the stage to show the change:
+    stage.update();
+};
 
 document.addEventListener("DOMContentLoaded", init);
