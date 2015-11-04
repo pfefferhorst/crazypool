@@ -5,6 +5,9 @@ var stageWidth = 1000;
 var targetPoint = [(stageWidth / 50) - 1, 1];
 var startPoint;
 var targetPoint;
+var answerPoint = [2, 2];
+
+var confirm = document.getElementById("confirm");
 
 var init = function() {
     stage = new createjs.Stage("canvas");
@@ -14,14 +17,14 @@ var init = function() {
 
     drawGrid();
 
-
     startPoint = generateVector("start");
     collisionPoint = generateVector("collision");
 
     drawPoint(targetPoint[0], targetPoint[1], "target");
     drawPoint(startPoint[0], startPoint[1], "point");
     drawPoint(collisionPoint[0], collisionPoint[1], "point");
-    
+    drawVector("initial");
+
     var circle = new createjs.Shape();
     circle.graphics.beginFill("lightgrey").drawCircle(0, 0, 10);
 
@@ -29,15 +32,28 @@ var init = function() {
     dragger.x = dragger.y = 100;
     dragger.addChild(circle);
     stage.addChild(dragger);
-    
+
     dragger.on("pressmove",function(evt) {
-    // currentTarget will be the container that the event listener was added to:
-    evt.currentTarget.x = Math.round(evt.stageX/50)*50;
-    evt.currentTarget.y = Math.round(evt.stageY/50)*50;
-});
+        // currentTarget will be the container that the event listener was added to:
+        dragger.x = Math.round(evt.stageX/50)*50;
+        dragger.y = Math.round(evt.stageY/50)*50;
 
-
+        answerPoint = [dragger.x / 50, dragger.y / 50];
+    });
 }
+
+confirm.addEventListener("click", function() {
+  initVector = subtractVector(collisionPoint, startPoint);
+  answerVector = subtractVector(collisionPoint, answerPoint);
+  correctVector = subtractVector(targetPoint, collisionPoint);
+  console.log(initVector + " : " + answerVector  + " : " + correctVector);
+
+  if(compareVector(addVector(initVector, answerVector), correctVector)) {
+    alert("SIEG");
+  } else {
+    alert("NIEDERLAGE");
+  }
+});
 
 // a und b sind ARRAYS mit den VEKTOREN drin
 var addVector = function(a, b) {
@@ -46,8 +62,14 @@ var addVector = function(a, b) {
   return [x,y];
 }
 
-var isVectorCorrect = function(vector) {
-  return (addVector(collisionPoint, vector)[0] == 0 && addVector(collisionPoint, vector)[1] == 0);
+var subtractVector = function(a, b) {
+  var x = a[0] - b[0];
+  var y = a[1] - b[1];
+  return [x,y];
+}
+
+var compareVector = function(a, b) {
+  return (a[0] == b[0] && a[1] == b[1]);
 }
 
 var drawGrid = function() {
@@ -88,6 +110,10 @@ var drawPoint = function(x, y, type) {
   point.y = y * 50;
 
   stage.addChild(point);
+}
+
+var drawVector = function(p1, p2) {
+  var line = new createjs.Shape();
 }
 
 var generateVector = function(type) {
