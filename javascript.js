@@ -191,10 +191,9 @@ var generateVector = function(type) {
 
     maxY = 10;
     minY = 7;
-    var i = 0;
+    i = 0;
     while(isInvalid) {
-      i++;   
-      console.log("Durchgang: " + i);
+
       startX = getRandomInt(minX, maxX);
       startY = getRandomInt(minY, maxY);
 
@@ -205,11 +204,30 @@ var generateVector = function(type) {
       imaginePoint = [imaginePoint[0], (stageHeight/50) - imaginePoint[1]];
       tempTargetPoint = [targetPoint[0], (stageHeight/50) - targetPoint[1]];
       potAnsVector = subtractVector(tempTargetPoint, imaginePoint);
+      console.log("Pot Ans:" + potAnsVector);
 
-      if(collisionPoint[0] - potAnsVector[0] >= 0 && (stageHeight/50) - collisionPoint[1] - potAnsVector[1] >= 0) {
+      if(
+          collisionPoint[0] - potAnsVector[0] >= 0 && 
+          collisionPoint[0] - potAnsVector[0] <= (stageWidth / 50) && 
+          collisionPoint[1] + potAnsVector[1] <= (stageHeight/50) && 
+          collisionPoint[1] + potAnsVector[1] >= 0
+      ) {
         isInvalid = false;
+        console.log("possible");
+      } else {
+        isInvalid = true;
+        i++;
+        console.log("impossible " +  i);
+
+        if(i > 10) {
+          collisionPoint = generateVector("collision");
+        }
       }
     }
+    /*
+     && 
+         (stageHeight/50) - collisionPoint[1] - potAnsVector[1] <= (stageHeight/50)
+         */
 
   } else if (type == "collision") {
 
@@ -221,6 +239,7 @@ var generateVector = function(type) {
 
     startX = getRandomInt(minX, maxX);
     startY = getRandomInt(minY, maxY);
+    console.log(startX, (stageHeight/50) - startY);
   } else {
     console.log("ALARM, FALSCHER PARAMETER, ENTWEDER START ODER COLLISON DU HUNDDDDD");
   }
