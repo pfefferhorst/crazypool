@@ -2,10 +2,13 @@ var stage;
 var stageHeight = 600;
 var stageWidth = 1000;
 
-var targetPoint = [(stageWidth / 50) - 1, 1];
+var targetPoint = [(stageWidth/50) - 1, (stageHeight/50) - 1];
 var startPoint;
-var targetPoint;
 var answerPoint = [2, 2];
+
+var initBall = new createjs.Container();
+var dragger = new createjs.Container();
+var collisionPoint;
 
 var confirm = document.getElementById("confirm");
 
@@ -17,43 +20,92 @@ var init = function() {
 
     drawGrid();
 
-    startPoint = generateVector("start");
     collisionPoint = generateVector("collision");
-
-    drawPoint(targetPoint[0], targetPoint[1], "target");
-    drawPoint(startPoint[0], startPoint[1], "point");
-    drawPoint(collisionPoint[0], collisionPoint[1], "point");
+    startPoint = generateVector("start");
+    
+    stage.addChild(drawPoint(targetPoint[0], targetPoint[1], "target"));
+    initBall.addChild(drawPoint(startPoint[0], startPoint[1], "point"));
+    stage.addChild(drawPoint(collisionPoint[0], collisionPoint[1], "collision"));
     drawVector("initial");
 
     var circle = new createjs.Shape();
     circle.graphics.beginFill("lightgrey").drawCircle(0, 0, 10);
 
-    var dragger = new createjs.Container();
     dragger.x = dragger.y = 100;
     dragger.addChild(circle);
     stage.addChild(dragger);
+    stage.addChild(initBall);
 
     dragger.on("pressmove",function(evt) {
         // currentTarget will be the container that the event listener was added to:
         dragger.x = Math.round(evt.stageX/50)*50;
         dragger.y = Math.round(evt.stageY/50)*50;
 
-        answerPoint = [dragger.x / 50, dragger.y / 50];
+        answerPoint = [dragger.x / 50, (stageHeight/50) - dragger.y / 50];
     });
 }
 
 confirm.addEventListener("click", function() {
+  initiateAnimation();
+});
+
+var orgDragger;
+
+// animates the process
+var initiateAnimation = function() {
+
+  orgDragger = [dragger.x, dragger.y];
+
+  createjs.Tween.get(initBall)
+    .to({x: (collisionPoint[0] * 50) - (startPoint[0] * 50), y: ((stageHeight - (collisionPoint[1] * 50)) - (stageHeight - (startPoint[1] * 50)))}, 500, createjs.Ease.linear());
+
+  createjs.Tween.get(dragger)
+    .to({x: (collisionPoint[0] * 50), y: stageHeight - (collisionPoint[1] * 50)}, 500, createjs.Ease.linear());
+
+  window.setTimeout(animateEnd, 550);
+}
+
+var animateEnd = function() {
+
+  var markusVektor = addVector(
+    [
+      ((collisionPoint[0] * 50) - (startPoint[0] * 50)),
+      (((stageHeight - (collisionPoint[1] * 50)) - (stageHeight - (startPoint[1] * 50))) * (-1))
+    ],
+    [
+      ((collisionPoint[0] * 50) - orgDragger[0]),
+      (((stageHeight - (collisionPoint[1] * 50)) - orgDragger[1]) * (-1))
+    ]);
+/**
+    console.log("SCx" + ((collisionPoint[0] * 50) - (startPoint[0] * 50)));
+    console.log("SCy" + (((stageHeight - (collisionPoint[1] * 50)) - (stageHeight - (startPoint[1] * 50))) * (-1)));
+
+    console.log(collisionPoint[0] * 50);
+    console.log(dragger.x);
+
+    console.log("ACx" + ((collisionPoint[0] * 50) - orgDragger[0]));
+    console.log("ACy" + (((stageHeight - (collisionPoint[1] * 50)) - orgDragger[1])));
+*/
+    markusVektor[1] = markusVektor[1] * (-1)
+
+  
+  createjs.Tween.get(initBall)
+    .to({x: initBall.x + markusVektor[0], y: initBall.y + markusVektor[1]}, 500, createjs.Ease.linear());
+
+    window.setTimeout(win, 550);
+}
+
+var win = function() {
   initVector = subtractVector(collisionPoint, startPoint);
   answerVector = subtractVector(collisionPoint, answerPoint);
   correctVector = subtractVector(targetPoint, collisionPoint);
-  console.log(initVector + " : " + answerVector  + " : " + correctVector);
 
   if(compareVector(addVector(initVector, answerVector), correctVector)) {
     alert("SIEG");
   } else {
     alert("NIEDERLAGE");
   }
-});
+}
 
 // a und b sind ARRAYS mit den VEKTOREN drin
 var addVector = function(a, b) {
@@ -101,15 +153,19 @@ var drawPoint = function(x, y, type) {
   if(type == "target") {
     color = "red";
     size = 20
+  } else if(type == "collision") {
+    color = "black";
+    size = 5;
   } else {
     color = "black";
     size = 10;
   }
+
   point.graphics.setStrokeStyle(1).beginFill(color).drawCircle(0, 0, size);
   point.x = x * 50;
-  point.y = y * 50;
+  point.y = stageHeight - (y * 50);
 
-  stage.addChild(point);
+  return point;
 }
 
 var drawVector = function(p1, p2) {
@@ -121,25 +177,46 @@ var generateVector = function(type) {
   var minX, maxX, minY, maxY;
 
   if(type == "start") {
+    isInvalid = true;
+
     minX = (stageWidth / 50) / 2;
     maxX = (stageWidth / 50) - 2;
 
     maxY = 10;
     minY = 7;
+
+    while(isInvalid) {
+      startX = getRandomInt(minX, maxX);
+      startY = getRandomInt(minY, maxY);
+
+      startPoint = [startX, (stageHeight/50) - startY];
+      startVector = subtractVector(collisionPoint, startPoint);
+
+      imaginePoint = addVector(collisionPoint, startVector);
+      imaginePoint = [imaginePoint[0], (stageHeight/50) - imaginePoint[1]];
+      tempTargetPoint = [targetPoint[0], (stageHeight/50) - targetPoint[1]];
+      potAnsVector = subtractVector(tempTargetPoint, imaginePoint);
+
+      if(collisionPoint[0] - potAnsVector[0] >= 0 && (stageHeight/50) - collisionPoint[1] - potAnsVector[1] >= 0) {
+        isInvalid = false;
+      }
+    }
+
   } else if (type == "collision") {
+
     minX = (stageWidth / 50) / 2;
     maxX = (stageWidth / 50) - 2;
 
     minY = 2;
     maxY = 6;
+
+    startX = getRandomInt(minX, maxX);
+    startY = getRandomInt(minY, maxY);
   } else {
     console.log("ALARM, FALSCHER PARAMETER, ENTWEDER START ODER COLLISON DU HUNDDDDD");
   }
 
-  startX = getRandomInt(minX, maxX);
-  startY = getRandomInt(minY, maxY);
-
-  return [startX, startY];
+  return [startX, (stageHeight/50) - startY];
 }
 
 function getRandomInt(min, max) {
