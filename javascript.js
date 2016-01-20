@@ -11,6 +11,7 @@ var dragger = new createjs.Container();
 var collisionPoint;
 
 var confirm = document.getElementById("confirm");
+var restart = document.getElementById("restart");
 
 var init = function() {
     stage = new createjs.Stage("canvas");
@@ -48,6 +49,10 @@ var init = function() {
 confirm.addEventListener("click", function() {
   initiateAnimation();
 });
+
+restart.addEventListener("click",function() {
+    location.reload();
+})
 
 var orgDragger;
 
@@ -101,14 +106,14 @@ var win = function() {
   correctVector = subtractVector(targetPoint, collisionPoint);
 
   if(compareVector(addVector(initVector, answerVector), correctVector)) {
-    var txt_sieg = new createjs.Text("Sieg!", "20px Arial", "#ff7700");
-    txt_sieg.x = 100;
-    txt_sieg.textBaseline = "alphabetic";
+    var txt_sieg = new createjs.Text("Sieg!", "40px Arial", "#ff7700");
+    txt_sieg.x = 400;
+    txt_sieg.y = 280;
     stage.addChild(txt_sieg);
   } else {
-    var txt_niederlage = new createjs.Text("Niederlage!", "20px Arial", "#ff7700");
-    txt_niederlage.x = 100;
-    txt_niederlage.textBaseline = "alphabetic";
+    var txt_niederlage = new createjs.Text("Niederlage!", "40px Arial", "#ff7700");
+    txt_niederlage.x = 400;
+    txt_niederlage.y = 280;
     stage.addChild(txt_niederlage);
     console.log(txt_niederlage);
   }
