@@ -184,8 +184,10 @@ var generateVector = function(type) {
 
     maxY = 10;
     minY = 7;
-
+    var i = 0;
     while(isInvalid) {
+      i++;   
+      console.log("Durchgang: " + i);
       startX = getRandomInt(minX, maxX);
       startY = getRandomInt(minY, maxY);
 
@@ -207,8 +209,8 @@ var generateVector = function(type) {
     minX = (stageWidth / 50) / 2;
     maxX = (stageWidth / 50) - 2;
 
-    minY = 2;
-    maxY = 6;
+    minY = 4;
+    maxY = 8;
 
     startX = getRandomInt(minX, maxX);
     startY = getRandomInt(minY, maxY);
