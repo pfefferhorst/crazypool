@@ -101,9 +101,16 @@ var win = function() {
   correctVector = subtractVector(targetPoint, collisionPoint);
 
   if(compareVector(addVector(initVector, answerVector), correctVector)) {
-    alert("SIEG");
+    var txt_sieg = new createjs.Text("Sieg!", "20px Arial", "#ff7700");
+    txt_sieg.x = 100;
+    txt_sieg.textBaseline = "alphabetic";
+    stage.addChild(txt_sieg);
   } else {
-    alert("NIEDERLAGE");
+    var txt_niederlage = new createjs.Text("Niederlage!", "20px Arial", "#ff7700");
+    txt_niederlage.x = 100;
+    txt_niederlage.textBaseline = "alphabetic";
+    stage.addChild(txt_niederlage);
+    console.log(txt_niederlage);
   }
 }
 
