@@ -5,6 +5,7 @@ var stageWidth = 1000;
 var targetPoint = [(stageWidth/50) - 1, (stageHeight/50) - 1];
 var startPoint;
 var answerPoint = [2, 2];
+var correctVector = [];
 
 var initBall = new createjs.Container();
 var dragger = new createjs.Container();
@@ -116,6 +117,10 @@ var win = function() {
     txt_niederlage.y = 280;
     stage.addChild(txt_niederlage);
     console.log(txt_niederlage);
+
+    correctPoint = new createjs.Container();
+    initBall.addChild(drawPoint(correctPoint[0], correctPoint[1], "correct"));
+
   }
 }
 
@@ -168,6 +173,9 @@ var drawPoint = function(x, y, type) {
   } else if(type == "collision") {
     color = "black";
     size = 5;
+  } else if (type == "correct") {
+    color = "gold";
+    size = 10;
   } else {
     color = "black";
     size = 10;
@@ -210,6 +218,9 @@ var generateVector = function(type) {
       tempTargetPoint = [targetPoint[0], (stageHeight/50) - targetPoint[1]];
       potAnsVector = subtractVector(tempTargetPoint, imaginePoint);
       console.log("Pot Ans:" + potAnsVector);
+
+      correctVector = [collisionPoint[0] - potAnsVector[0], (stageHeight / 50) - (collisionPoint[1] + potAnsVector[1])];
+      console.log("korrect: " + correctVector)
 
       if(
           collisionPoint[0] - potAnsVector[0] >= 0 && 
@@ -269,3 +280,12 @@ function BEWEGEN(evt) {
 };
 
 document.addEventListener("DOMContentLoaded", init);
+
+document.addEventListener("keydown", function (event) {
+  console.log(event.key);
+
+  if (event.key == "Enter") {
+    initiateAnimation();
+    console.log("HHHIHIHIHIHI");
+  }
+}, true);
