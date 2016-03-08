@@ -11,7 +11,6 @@ var initBall = new createjs.Container();
 var dragger = new createjs.Container();
 var collisionPoint;
 
-var confirm = document.getElementById("confirm");
 var restart = document.getElementById("restart");
 
 var init = function() {
@@ -47,9 +46,6 @@ var init = function() {
     });
 }
 
-confirm.addEventListener("click", function() {
-  initiateAnimation();
-});
 
 restart.addEventListener("click",function() {
     location.reload();
@@ -282,9 +278,10 @@ function BEWEGEN(evt) {
 document.addEventListener("DOMContentLoaded", init);
 
 document.addEventListener("keydown", function (event) {
-  console.log(event.key);
+  console.log("ENTER", event.key);
+  console.log(event.keyCode);
 
-  if (event.key == "Enter") {
+  if (event.keyCode == 13 || event.key == "Enter") {
     initiateAnimation();
     console.log("HHHIHIHIHIHI");
   }
